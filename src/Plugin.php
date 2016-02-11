@@ -31,7 +31,7 @@ class Plugin extends AbstractPlugin
     /**
      * Response Format
      */
-    protected $responseFormat = '%display_name% playing %game% - %status%';
+    protected $responseFormat = '%viewers% viewers watching %display_name% play %game% - %status%';
 
     /**
      * Accepts plugin configuration.
