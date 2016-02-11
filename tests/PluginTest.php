@@ -23,7 +23,21 @@ use Sitedyno\Phergie\Plugin\TwitchStatus\Plugin;
  */
 class PluginTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Setup
+     */
+    public function setUp()
+    {
+        $this->plugin = new Plugin;
+    }
 
+    /**
+     * Teardown
+     */
+    public function tearDown()
+    {
+        $this->plugin = null;
+    }
 
     /**
      * Tests that getSubscribedEvents() returns an array.
@@ -32,5 +46,57 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         $plugin = new Plugin;
         $this->assertInternalType('array', $plugin->getSubscribedEvents());
+    }
+
+    /**
+     * Supplies urls for getChannelName
+     */
+    public function channelNames()
+    {
+        yield [
+            'http://www.twitch.tv/directory/following',
+            ''
+        ];
+
+        yield [
+            'http://www.twitch.tv/directory',
+            ''
+        ];
+
+        yield [
+            'http://www.twitch.tv/test_channel',
+            'test_channel'
+        ];
+    }
+
+    /**
+     * Test extracting channel name from urls
+     *
+     * @dataProvider channelNames
+     */
+    public function testGetChannelName($url, $channelName)
+    {
+        $this->assertSame($channelName, $this->plugin->getChannelName($url));
+    }
+
+    /**
+     * Supplies channel names for testGetApiUrl
+     */
+    public function apiUrls()
+    {
+        yield [
+            'test_channel',
+            'https://api.twitch.tv/kraken/streams/test_channel'
+        ];
+    }
+
+    /**
+     * Test getting API URLs
+     *
+     * @dataProvider apiUrls
+     */
+    public function testGetApiUrl($channelName, $apiUrl)
+    {
+        $this->assertSame($apiUrl, $this->plugin->getApiUrl($channelName));
     }
 }
