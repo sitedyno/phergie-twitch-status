@@ -29,6 +29,11 @@ class Plugin extends AbstractPlugin
     protected $apiUrl = 'https://api.twitch.tv/kraken/streams/';
 
     /**
+     * Response Format
+     */
+    protected $responseFormat = '%display_name% playing %game% - %status%';
+
+    /**
      * Accepts plugin configuration.
      *
      * Supported keys:
