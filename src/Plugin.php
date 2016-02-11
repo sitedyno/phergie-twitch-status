@@ -193,14 +193,14 @@ class Plugin extends AbstractPlugin
     {
         $game = $data->stream->game;
         $viewers = $data->stream->viewers;
-        $mature = $data->channel->mature ? 'yes' : 'no';
-        $status = $data->channel->status;
-        $display_name = $data->channel->display_name;
-        $name = $data->channel->name;
-        $partner = $data->channel->partner ? 'yes' : 'no';
-        $url = $data->channel->url;
-        $views = $data->channel->views;
-        $followers = $data->channel->followers;
+        $mature = $data->stream->channel->mature ? 'yes' : 'no';
+        $status = $data->stream->channel->status;
+        $display_name = $data->stream->channel->display_name;
+        $name = $data->stream->channel->name;
+        $partner = $data->stream->channel->partner ? 'yes' : 'no';
+        $url = $data->stream->channel->url;
+        $views = $data->stream->channel->views;
+        $followers = $data->stream->channel->followers;
         return [
             '%game%' => $game,
             '%viewers%' => $viewers,
