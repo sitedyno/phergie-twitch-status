@@ -148,7 +148,7 @@ class Plugin extends AbstractPlugin
     public function resolve($url, \GuzzleHttp\Message\Response $data, Event $event, Queue $queue)
     {
         $logger = $this->getLogger();
-        $json = json_decode($data->getBody());
+        $json = json_decode($data->getBody());var_dump($json);exit();
         $logger->info('resolve', ['url' => $url, 'json', $json]);
         if (isset($json->error)) {
             return $logger->warning('Twitch response error',
