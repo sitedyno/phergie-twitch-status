@@ -18,11 +18,15 @@ See Phergie documentation for more information on
 ```php
 return [
     'plugins' => [
+        // dependencies
+        new \Phergie\Plugin\Dns\Plugin,
+        new \Phergie\Plugin\Http\Plugin,
+        new \Phergie\Irc\Plugin\React\Url\Plugin,
+
         // configuration
         new \Sitedyno\Phergie\Plugin\Twitch-status\Plugin([
-
-
-
+            // optional: template used to define response to urls
+            'responseFormat' => '%viewers% viewers watching %display_name% play %game% - %status%',
         ])
     ]
 ];
