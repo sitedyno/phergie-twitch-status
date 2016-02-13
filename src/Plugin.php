@@ -10,6 +10,7 @@
 
 namespace Sitedyno\Phergie\Plugin\TwitchStatus;
 
+use DomainException;
 use Phergie\Irc\Bot\React\AbstractPlugin;
 use Phergie\Irc\Bot\React\EventQueueInterface as Queue;
 use Phergie\Irc\Event\EventInterface as Event;
@@ -23,6 +24,11 @@ use Phergie\Plugin\Http\Request as HttpRequest;
  */
 class Plugin extends AbstractPlugin
 {
+    /**
+     * Invalid responseFormat code
+     */
+    const INVALID_RESPONSEFORMAT = 1;
+
     /**
      * Twitch API Url
      */
@@ -44,7 +50,7 @@ class Plugin extends AbstractPlugin
      */
     public function __construct(array $config = [])
     {
-
+        $this->resonseFormat = $this->getResponseFormat($config);
     }
 
     /**
@@ -213,5 +219,26 @@ class Plugin extends AbstractPlugin
             '%views%' => $views,
             '%followers%' => $followers
         ];
+    }
+
+    /**
+     * Returns format for the bot's repsonse.
+     *
+     * @param array $config
+     * @return string
+     * @throws \DomainException if format setting is invalid
+     */
+    protected function getResponseFormat(array $config)
+    {
+        if (isset($config['responseFormat'])) {
+            if (!is_string($config['responseFormat'])) {
+                throw new DomainException(
+                    'responseFormat must be a string',
+                    Plugin::INVALID_RESPONSEFORMAT
+                );
+            }
+            return $config['responseFormat'];
+        }
+        return $this->responseFormat;
     }
 }
