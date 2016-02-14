@@ -158,7 +158,7 @@ class Plugin extends AbstractPlugin
         $logger->info('resolve', ['url' => $url, 'json', $json]);
         if (isset($json->error)) {
             return $logger->warning('Twitch response error',
-                ['url' => $url, 'error' => $json->error]);
+                ['url' => $url, 'error' => $json->error, 'message' => $json->message]);
         }
         if (null === $json->stream) {
             return $queue->ircPrivmsg($event->getSource(), "Stream is offline");

@@ -61,6 +61,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
         $this->queue = Phake::mock('\Phergie\Irc\Bot\React\EventQueueInterface');
         $this->emitter = Phake::mock('\Evenement\EventEmitterInterface');
         $this->logger = Phake::mock('\Psr\Log\LoggerInterface');
+        $this->response = Phake::mock('\GuzzleHttp\Message\Response');
         $this->plugin = new Plugin;
         $this->plugin->setEventEmitter($this->emitter);
         $this->plugin->setLogger($this->logger);
@@ -176,6 +177,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
      * Tests handleUrl() with a valid URL
      *
      * @param string $url
+     * @return array Request configuration used by other tests
      * @dataProvider channelUrls
      */
     public function testHandleUrl($url)
@@ -203,5 +205,26 @@ class PluginTest extends \PHPUnit_Framework_TestCase
                 $this->plugin->handleUrl($url, $this->event, $this->queue);
             }
         }
+        return $config;
+    }
+
+    /**
+     * Test resolve with an API error
+     */
+    public function testResolveWithApiError()
+    {
+        Phake::verifyNoFurtherInteraction($this->queue);
+        $requestConfig = $this->testHandleUrl('http://www.twitch.tv/test_channel');
+        $resolve = $requestConfig['resolveCallback'];
+        Phake::when($this->response)->getBody()->thenReturn('{"message":"Invalid Token","status":401,"error":"Unauthorized"}');
+        $resolve($this->response, $this->event, $this->queue);
+        Phake::verify($this->logger)->warning(
+            'Twitch response error',
+            [
+                'url' => 'https://api.twitch.tv/kraken/streams/test_channel',
+                'error' => 'Unauthorized',
+                'message' => 'Invalid Token'
+            ]
+        );
     }
 }
