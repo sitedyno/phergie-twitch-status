@@ -147,8 +147,8 @@ class Plugin extends AbstractPlugin
         $request = new HttpRequest([
             'url' => $url,
             'headers' => [
-                'Accept: application/vnd.twitchtv.v3+json',
-                'Client-ID: ' . $this->clientId
+                'Accept' => 'application/vnd.twitchtv.v3+json',
+                'Client-ID' => $this->clientId,
             ],
             'resolveCallback' => function($data) use ($url, $event, $queue) {
                 $this->resolve($url, $data, $event, $queue);
@@ -202,6 +202,7 @@ class Plugin extends AbstractPlugin
             array(
                 'url' => $url,
                 'error' => $error,
+                'message' => $error->getResponse()->getBody()->getContents(),
             )
         );
     }
