@@ -25,6 +25,14 @@ use Phergie\Plugin\Http\Request as HttpRequest;
 class Plugin extends AbstractPlugin
 {
     /**
+     * clientId is required code
+     */
+    const CLIENTID_REQUIRED = 3;
+    /**
+     * Invalid clientId code
+     */
+    const INVALID_CLIENTID = 2;
+    /**
      * Invalid responseFormat code
      */
     const INVALID_RESPONSEFORMAT = 1;
@@ -33,6 +41,11 @@ class Plugin extends AbstractPlugin
      * Twitch API Url
      */
     protected $apiUrl = 'https://api.twitch.tv/kraken/streams/';
+
+    /**
+     * Client ID for Twitch
+     */
+    protected $clientId = '';
 
     /**
      * Response Format
@@ -50,6 +63,7 @@ class Plugin extends AbstractPlugin
      */
     public function __construct(array $config = [])
     {
+        $this->clientId = $this->getClientId($config);
         $this->resonseFormat = $this->getResponseFormat($config);
     }
 
@@ -132,7 +146,10 @@ class Plugin extends AbstractPlugin
     {
         $request = new HttpRequest([
             'url' => $url,
-            'headers' => ['Accept: application/vnd.twitchtv.v3+json'],
+            'headers' => [
+                'Accept: application/vnd.twitchtv.v3+json',
+                'Client-ID: ' . $this->clientId
+            ],
             'resolveCallback' => function($data) use ($url, $event, $queue) {
                 $this->resolve($url, $data, $event, $queue);
             },
@@ -221,6 +238,29 @@ class Plugin extends AbstractPlugin
         ];
     }
 
+    /**
+     * Returns the Client ID for Twitch
+     *
+     * @param array $config
+     * @return string
+     * @throws \DomainException if the ID appears invalid
+     */
+    protected function getClientId(array $config)
+    {
+        if (isset($config['clientId'])) {
+            if (!is_string($config['clientId'])) {
+                throw new DomainException(
+                    'clientId must be a string',
+                    Plugin::INVALID_CLIENTID
+                );
+            }
+            return $config['clientId'];
+        }
+        throw new DomainException(
+            'You must supply a clientId key',
+            Plugin::CLIENTID_REQUIRED
+        );
+    }
     /**
      * Returns format for the bot's repsonse.
      *

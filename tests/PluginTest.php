@@ -62,7 +62,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
         $this->emitter = Phake::mock('\Evenement\EventEmitterInterface');
         $this->logger = Phake::mock('\Psr\Log\LoggerInterface');
         $this->response = Phake::mock('\GuzzleHttp\Message\Response');
-        $this->plugin = new Plugin;
+        $this->plugin = new Plugin(['clientId' => 'FakeTwitchClientId']);
         $this->plugin->setEventEmitter($this->emitter);
         $this->plugin->setLogger($this->logger);
     }
@@ -80,8 +80,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetSubscribedEvents()
     {
-        $plugin = new Plugin;
-        $this->assertInternalType('array', $plugin->getSubscribedEvents());
+        $this->assertInternalType('array', $this->plugin->getSubscribedEvents());
     }
 
     /**
@@ -90,7 +89,17 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     public function invalidConfigurations()
     {
         yield [
-            ['responseFormat' => 1],
+            [],
+            Plugin::CLIENTID_REQUIRED,
+        ];
+
+        yield [
+            ['clientId' => 1],
+            Plugin::INVALID_CLIENTID,
+        ];
+
+        yield [
+            ['clientId' => 'FakeTwitchId', 'responseFormat' => 1],
             Plugin::INVALID_RESPONSEFORMAT,
         ];
     }
